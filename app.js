@@ -4,66 +4,27 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const errorController = require('./controllers/error');
-const sequelize = require('./util/database');
-
-const Product = require('./models/product');
-const User = require('./models/user');
+const mongoConnect = require('./util/database');
 
 const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
-const adminRoutes = require('./routes/admin');
-const shopRoutes = require('./routes/shop');
-const Cart = require('./models/cart');
-const CartItem = require('./models/cart-item');
+// const adminRoutes = require('./routes/admin');
+// const shopRoutes = require('./routes/shop');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use((req, res, next) => {
-	User.findByPk(1)
-		.then((user) => {
-			req.user = user;
-			next();
-		})
-		.catch((err) => {
-			console.error(err);
-			next(new Error('Failed to fetch user'));
-		});
-});
+app.use((req, res, next) => {});
 
-app.use('/admin', adminRoutes);
-app.use(shopRoutes);
+// app.use('/admin', adminRoutes);
+// app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
-User.hasMany(Product);
-User.hasOne(Cart);
-Cart.belongsTo(User);
-Cart.belongsToMany(Product, { through: CartItem });
-Product.belongsToMany(Cart, { through: CartItem });
-
-sequelize
-	// .sync({ force: true }) // Use force: true only for development to reset the database
-	.sync()
-	.then((result) => {
-		return User.findByPk(1);
-	})
-	.then((user) => {
-		if (!user) {
-			return User.create({ name: 'Mik', email: 'mik@example.com' });
-		}
-		return Promise.resolve(user);
-	})
-	.then((user) => {
-		user.createCart();
-	})
-	.then((cart) => {
-		app.listen(3000);
-	})
-	.catch((err) => {
-		console.error(err);
-	});
+mongoConnect((client) => {
+	console.log(client);
+	app.listen(3000);
+});
