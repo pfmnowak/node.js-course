@@ -1,14 +1,9 @@
+require('dotenv').config();
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 
 const mongoConnect = (callback) => {
-	MongoClient.connect(
-		'mongodb+srv://pfmnowak_db_user:<3z2ZKkTJtJbqeP5p@cluster0.ksbjywm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-		{
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-		}
-	)
+	MongoClient.connect(process.env.MONGO_URL)
 		.then((client) => {
 			console.log('Connected to Database');
 			callback(client);
