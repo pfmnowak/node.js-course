@@ -15,7 +15,7 @@ exports.postAddProduct = (req, res, next) => {
 	const description = req.body.description;
 	const product = new Product({
 		title: title,
-		imageUrl: imageUrl,
+		imageUrl: `https://picsum.photos/200?random=${Math.floor(Math.random() * 100) + 1}`,
 		description: description,
 		price: price,
 		// userId: req.user._id,
